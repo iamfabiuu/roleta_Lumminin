@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#ff7a00" />
+    <title>Tema Revelado · Lumminin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --preto: #0a0a0c;
+        --grafite: #201c1b;
+        --laranja: #ff7a00;
+        --cinza: #e2e1df;
+        --cor: var(--laranja);
+        --seguro-b: env(safe-area-inset-bottom, 0px);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        background: var(--preto);
+        color: var(--cinza);
+        font-family: "Inter", sans-serif;
+        min-height: 100dvh;
+        overflow-x: hidden;
+        padding-bottom: calc(96px + var(--seguro-b));
+      }
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.08;
+        z-index: 99;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+      img {
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+      .anton {
+        font-family: "Anton", sans-serif;
+        letter-spacing: 2px;
+      }
+      .skew {
+        display: inline-block;
+        transform: skewX(-10deg);
+      }
+
+      /* HERO */
+      .hero {
+        background: var(--cor);
+        color: var(--preto);
+        border-radius: 0 0 44px 44px;
+        padding: calc(1.2rem + env(safe-area-inset-top, 0px)) 1.4rem 2.4rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .topo {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+      .logo {
+        width: 130px;
+        height: auto;
+      }
+      .btn-share {
+        min-height: 44px;
+        padding: 0 1rem;
+        border: 2px solid var(--preto);
+        border-radius: 99px;
+        background: transparent;
+        color: var(--preto);
+        font:
+          400 0.95rem "Anton",
+          sans-serif;
+        letter-spacing: 1.5px;
+        cursor: pointer;
+      }
+      .btn-share:active {
+        background: var(--preto);
+        color: var(--cor);
+      }
+      .estrela {
+        position: absolute;
+        right: -18px;
+        bottom: -18px;
+        width: 120px;
+        height: auto;
+        opacity: 0.25;
+        pointer-events: none;
+        animation: gira 18s linear infinite;
+      }
+      @keyframes gira {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .tag {
+        margin-top: 2rem;
+        display: inline-block;
+        border: 2px solid var(--preto);
+        border-radius: 99px;
+        padding: 0.2rem 0.9rem;
+        font-size: 0.9rem;
+      }
+      h1 {
+        font-family: "Anton", sans-serif;
+        font-size: clamp(2.4rem, 12vw, 4.6rem);
+        line-height: 0.95;
+        text-transform: uppercase;
+        transform: skewX(-10deg);
+        margin-top: 0.7rem;
+        text-wrap: balance;
+        overflow-wrap: anywhere;
+        animation: entra 0.8s cubic-bezier(0.2, 1.4, 0.4, 1) backwards;
+      }
+      @keyframes entra {
+        from {
+          opacity: 0;
+          transform: translateX(-50px) skewX(-10deg);
+        }
+      }
+
+      /* CONTEÚDO */
+      main {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 1.6rem 1.1rem 2rem;
+        display: grid;
+        gap: 1.1rem;
+      }
+      .card {
+        background: var(--grafite);
+        border-radius: 22px;
+        padding: 1.3rem 1.2rem;
+        border-left: 6px solid var(--cor);
+        animation: sobe 0.5s backwards;
+      }
+      .card:nth-child(2) {
+        animation-delay: 0.1s;
+      }
+      .card:nth-child(3) {
+        animation-delay: 0.2s;
+      }
+      .card:nth-child(4) {
+        animation-delay: 0.3s;
+      }
+      @keyframes sobe {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+      }
+      .card h2 {
+        font:
+          400 1.25rem "Anton",
+          sans-serif;
+        letter-spacing: 2px;
+        color: var(--cor);
+        margin-bottom: 0.6rem;
+        transform: skewX(-10deg);
+      }
+      .card p {
+        font-size: 1.08rem;
+        line-height: 1.6;
+      }
+      .card.desafio {
+        background: var(--cor);
+        color: var(--preto);
+        border-left-color: var(--preto);
+      }
+      .card.desafio h2 {
+        color: var(--preto);
+      }
+      .card.desafio p {
+        font-weight: 600;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .chips span {
+        background: rgba(226, 225, 223, 0.08);
+        border: 1px solid rgba(226, 225, 223, 0.18);
+        border-radius: 99px;
+        padding: 0.45rem 0.85rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+
+      .passos {
+        list-style: none;
+        display: grid;
+        gap: 0.6rem;
+      }
+      .passos button {
+        width: 100%;
+        min-height: 56px;
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        text-align: left;
+        background: rgba(226, 225, 223, 0.05);
+        border: 2px solid transparent;
+        border-radius: 16px;
+        padding: 0.7rem 0.9rem;
+        color: var(--cinza);
+        font:
+          600 1rem "Inter",
+          sans-serif;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .passos .check {
+        flex: 0 0 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 2px solid var(--cor);
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        color: var(--preto);
+      }
+      .passos small {
+        display: block;
+        font-weight: 400;
+        color: #9d9a97;
+        font-size: 0.88rem;
+        margin-top: 2px;
+      }
+      .passos .feito {
+        border-color: var(--cor);
+      }
+      .passos .feito .check {
+        background: var(--cor);
+      }
+      .passos .feito .check::after {
+        content: "✓";
+      }
+      .passos .feito strong {
+        text-decoration: line-through;
+        opacity: 0.7;
+      }
+      .progresso {
+        height: 8px;
+        border-radius: 99px;
+        background: rgba(226, 225, 223, 0.1);
+        margin-top: 0.9rem;
+        overflow: hidden;
+      }
+      .progresso i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: var(--cor);
+        transition: width 0.5s cubic-bezier(0.2, 1.3, 0.4, 1);
+      }
+
+      /* CRONÔMETRO FIXO */
+      .timer {
+        position: fixed;
+        left: 0.6rem;
+        right: 0.6rem;
+        bottom: calc(0.6rem + var(--seguro-b));
+        z-index: 20;
+        max-width: 620px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        background: rgba(32, 28, 27, 0.92);
+        backdrop-filter: blur(10px);
+        border: 2px solid var(--cor);
+        border-radius: 22px;
+        padding: 0.55rem 0.6rem 0.55rem 1rem;
+        box-shadow: 0 10px 40px #000;
+      }
+      .timer .tempo {
+        font:
+          400 2rem "Anton",
+          sans-serif;
+        letter-spacing: 2px;
+        font-variant-numeric: tabular-nums;
+        flex: 1;
+      }
+      .timer.fim .tempo {
+        color: var(--cor);
+        animation: pisca 0.6s infinite alternate;
+      }
+      @keyframes pisca {
+        to {
+          opacity: 0.3;
+        }
+      }
+      .timer button {
+        min-width: 52px;
+        min-height: 52px;
+        border-radius: 16px;
+        border: none;
+        font:
+          400 1.05rem "Anton",
+          sans-serif;
+        letter-spacing: 1px;
+        cursor: pointer;
+      }
+      .t-mais {
+        background: rgba(226, 225, 223, 0.1);
+        color: var(--cinza);
+      }
+      .t-play {
+        background: var(--cor);
+        color: var(--preto);
+        padding: 0 1.2rem;
+      }
+      .timer button:active {
+        transform: scale(0.94);
+      }
+
+      footer {
+        text-align: center;
+        padding: 1.2rem;
+        font-family: "Anton", sans-serif;
+        letter-spacing: 2px;
+        color: #777;
+      }
+      footer a {
+        color: var(--cor);
+        text-decoration: none;
+      }
+
+      .erro {
+        min-height: 80dvh;
+        display: grid;
+        place-content: center;
+        gap: 1rem;
+        text-align: center;
+        padding: 2rem;
+      }
+      .erro h1 {
+        color: var(--laranja);
+        font-size: 2.4rem;
+      }
+      .erro a {
+        justify-self: center;
+        background: var(--laranja);
+        color: var(--preto);
+        padding: 0.8rem 1.6rem;
+        border-radius: 14px;
+        text-decoration: none;
+        font-family: "Anton", sans-serif;
+        letter-spacing: 2px;
+      }
+
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: calc(100px + var(--seguro-b));
+        transform: translate(-50%, 20px);
+        opacity: 0;
+        background: var(--cinza);
+        color: var(--preto);
+        padding: 0.6rem 1.1rem;
+        border-radius: 99px;
+        font-weight: 800;
+        z-index: 30;
+        transition: 0.3s;
+        pointer-events: none;
+      }
+      .toast.on {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div class="toast" id="toast"></div>
+
+    <script src="temas.js"></script>
+    <script>
+      const $ = (s) => document.querySelector(s);
+      const el = (tag, cls, txt) => {
+        const e = document.createElement(tag);
+        if (cls) e.className = cls;
+        if (txt != null) e.textContent = txt;
+        return e;
+      };
+      const vibrar = (p) => navigator.vibrate?.(p);
+      const toast = (msg) => {
+        $("#toast").textContent = msg;
+        $("#toast").classList.add("on");
+        setTimeout(() => $("#toast").classList.remove("on"), 1800);
+      };
+
+      const lista =
+        typeof TEMAS !== "undefined" && Array.isArray(TEMAS) ? TEMAS : [];
+      const id = new URLSearchParams(location.search).get("t");
+      const t = lista.find((x) => x.id === id);
+      const app = $("#app");
+
+      const MATERIAIS = [
+        "📄 Papel",
+        "📦 Papelão",
+        "🩹 Fita",
+        "🧵 Barbante",
+        "🖍️ Canetinha",
+        "✂️ Tesoura",
+        "🧴 Cola",
+      ];
+      const PASSOS = [
+        ["Entender a persona", "Quem é, onde está, o que atrapalha?"],
+        ["Ter ideias", "Cada pessoa sugere pelo menos uma solução."],
+        ["Prototipar", "Monte rápido, feio e funcional vale mais."],
+        ["Testar e apresentar", "Simulem a situação e mostrem o resultado."],
+      ];
+
+      if (!t) {
+        app.innerHTML = `
+          <div class="erro">
+            <div style="font-size:3rem">🔮</div>
+            <h1>TEMA NÃO ENCONTRADO</h1>
+            <p style="color:#999">Escaneie o QR Code da roleta novamente.</p>
+            <a href="./">VOLTAR</a>
+          </div>`;
+      } else {
+        render();
+      }
+
+      function render() {
+        const cor = t.cor || "#ff7a00";
+        document.documentElement.style.setProperty("--cor", cor);
+        document.querySelector('meta[name="theme-color"]').content = cor;
+        document.title = `${t.nome} · Lumminin`;
+
+        /* HERO */
+        const hero = el("section", "hero");
+        const topo = el("div", "topo");
+        const logo = el("img", "logo");
+        logo.src = "logo_preta.svg";
+        logo.alt = "Lumminin";
+        const share = el("button", "btn-share", "📤 ENVIAR");
+        share.type = "button";
+        share.onclick = compartilhar;
+        topo.append(logo, share);
+
+        const estrela = el("img", "estrela");
+        estrela.src = "estrela_preta.svg";
+        estrela.alt = "";
+
+        hero.append(
+          topo,
+          estrela,
+          el(
+            "div",
+            "tag anton",
+            `🔮 TEMA ${t.numero} / ${String(lista.length).padStart(2, "0")}`,
+          ),
+          el("h1", null, t.nome),
+        );
+
+        /* CARDS */
+        const main = el("main");
+
+        const persona = el("section", "card");
+        persona.append(
+          el("h2", null, "👤 QUEM PRECISA DE AJUDA"),
+          el("p", null, t.persona),
+        );
+
+        const desafio = el("section", "card desafio");
+        desafio.append(
+          el("h2", null, "⚡ MISSÃO DA EQUIPE"),
+          el("p", null, t.desafio),
+        );
+
+        const mat = el("section", "card");
+        const chips = el("div", "chips");
+        MATERIAIS.forEach((m) => chips.append(el("span", null, m)));
+        mat.append(el("h2", null, "🧰 MATERIAIS"), chips);
+
+        main.append(persona, desafio, mat, criarPassos());
+
+        const footer = el("footer");
+        footer.innerHTML = `✦ <a href="https://instagram.com/lumminin.oficial" target="_blank" rel="noopener">@LUMMININ.OFICIAL</a> ✦`;
+
+        app.append(hero, main, footer, criarTimer());
+      }
+
+      /* ---------- PASSO A PASSO ---------- */
+      function criarPassos() {
+        const KEY = `lumminin_passos_${t.id}`;
+        let feitos;
+        try {
+          feitos = JSON.parse(localStorage.getItem(KEY)) || [];
+        } catch {
+          feitos = [];
+        }
+
+        const card = el("section", "card");
+        const ul = el("ul", "passos");
+        const barra = el("i");
+        const prog = el("div", "progresso");
+        prog.append(barra);
+
+        const atualizar = () => {
+          barra.style.width = (feitos.length / PASSOS.length) * 100 + "%";
+          try {
+            localStorage.setItem(KEY, JSON.stringify(feitos));
+          } catch {}
+        };
+
+        PASSOS.forEach(([titulo, sub], i) => {
+          const li = el("li");
+          const b = el("button");
+          b.type = "button";
+          b.setAttribute("aria-pressed", feitos.includes(i));
+          if (feitos.includes(i)) b.classList.add("feito");
+
+          const txt = el("div");
+          txt.append(
+            el("strong", null, `${i + 1}. ${titulo}`),
+            el("small", null, sub),
+          );
+          b.append(el("span", "check"), txt);
+
+          b.onclick = () => {
+            const on = b.classList.toggle("feito");
+            b.setAttribute("aria-pressed", on);
+            feitos = on
+              ? [...new Set([...feitos, i])]
+              : feitos.filter((x) => x !== i);
+            vibrar(on ? 25 : 10);
+            atualizar();
+            if (feitos.length === PASSOS.length) {
+              vibrar([60, 40, 120]);
+              toast("🎉 Missão cumprida!");
+            }
+          };
+
+          li.append(b);
+          ul.append(li);
+        });
+
+        card.append(el("h2", null, "🗺️ PASSO A PASSO"), ul, prog);
+        atualizar();
+        return card;
+      }
+
+      /* ---------- CRONÔMETRO ---------- */
+      function criarTimer() {
+        const PADRAO = 20 * 60;
+        let resta = PADRAO,
+          fimEm = null,
+          loop = null,
+          lock = null;
+
+        const box = el("div", "timer");
+        const tempo = el("div", "tempo");
+        const menos = el("button", "t-mais", "−5");
+        const mais = el("button", "t-mais", "+5");
+        const play = el("button", "t-play", "▶ INICIAR");
+        [menos, mais, play].forEach((b) => (b.type = "button"));
+        menos.setAttribute("aria-label", "Menos 5 minutos");
+        mais.setAttribute("aria-label", "Mais 5 minutos");
+
+        const fmt = (s) =>
+          `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+        const mostrar = () => (tempo.textContent = fmt(Math.max(0, resta)));
+
+        const segurarTela = async () => {
+          try {
+            lock = await navigator.wakeLock?.request("screen");
+          } catch {}
+        };
+        const soltarTela = () => {
+          lock?.release?.();
+          lock = null;
+        };
+
+        const parar = () => {
+          clearInterval(loop);
+          loop = null;
+          fimEm = null;
+          play.textContent = "▶ INICIAR";
+          soltarTela();
+        };
+
+        const tick = () => {
+          resta = Math.round((fimEm - Date.now()) / 1000);
+          mostrar();
+          if (resta <= 0) {
+            parar();
+            resta = 0;
+            box.classList.add("fim");
+            play.textContent = "↺ DE NOVO";
+            vibrar([300, 150, 300, 150, 600]);
+            toast("⏰ Tempo esgotado!");
+          }
+        };
+
+        play.onclick = () => {
+          vibrar(15);
+          if (loop) return parar();
+          if (resta <= 0) {
+            resta = PADRAO;
+            box.classList.remove("fim");
+          }
+          fimEm = Date.now() + resta * 1000;
+          loop = setInterval(tick, 250);
+          play.textContent = "❚❚ PAUSAR";
+          segurarTela();
+        };
+
+        const ajustar = (d) => {
+          vibrar(10);
+          resta = Math.min(90 * 60, Math.max(60, resta + d));
+          if (fimEm) fimEm = Date.now() + resta * 1000;
+          box.classList.remove("fim");
+          mostrar();
+        };
+        menos.onclick = () => ajustar(-300);
+        mais.onclick = () => ajustar(300);
+
+        // Wake Lock cai quando a aba fica oculta; reativa ao voltar.
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "visible" && loop) segurarTela();
+        });
+
+        mostrar();
+        box.append(tempo, menos, mais, play);
+        return box;
+      }
+
+      /* ---------- COMPARTILHAR ---------- */
+      async function compartilhar() {
+        const dados = {
+          title: `Lumminin · ${t.nome}`,
+          text: `Nosso desafio: ${t.nome} 🔥`,
+          url: location.href,
+        };
+        try {
+          if (navigator.share) return await navigator.share(dados);
+          await navigator.clipboard.writeText(location.href);
+          toast("🔗 Link copiado!");
+        } catch {}
+      }
+    </script>
+  </body>
+</html>

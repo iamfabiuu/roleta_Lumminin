@@ -400,6 +400,104 @@
           transition: none !important;
         }
       }
+
+      /* 👑 LENDÁRIA */
+      .lendaria .hero {
+        background: linear-gradient(120deg, #ffb300, #fff1a8, #ffb300, #ff9500);
+        background-size: 300% 100%;
+        animation: brilho 4s linear infinite;
+      }
+      @keyframes brilho {
+        to {
+          background-position: -300% 0;
+        }
+      }
+      .lendaria h1 {
+        text-shadow: 0 0 25px rgba(255, 255, 255, 0.7);
+      }
+      .lendaria .card {
+        box-shadow: 0 0 25px rgba(255, 201, 60, 0.15);
+      }
+
+      /* 🔥 PÂNICO FINAL */
+      body.panico::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 15;
+        pointer-events: none;
+        box-shadow: inset 0 0 140px #ff1a1a;
+        animation: alerta 1s infinite;
+      }
+      @keyframes alerta {
+        50% {
+          opacity: 0.15;
+        }
+      }
+      .panico .timer {
+        border-color: #ff1a1a;
+        box-shadow: 0 0 40px #ff1a1a88;
+      }
+      .panico .timer .tempo {
+        color: #ff1a1a;
+        animation: treme 0.15s infinite;
+      }
+      @keyframes treme {
+        25% {
+          transform: translateX(-2px) rotate(-1.5deg);
+        }
+        75% {
+          transform: translateX(2px) rotate(1.5deg);
+        }
+      }
+
+      /* 🃏 CORINGA */
+      .btn-coringa {
+        width: 100%;
+        min-height: 56px;
+        border: 2px dashed var(--cor);
+        border-radius: 16px;
+        background: transparent;
+        color: var(--cor);
+        cursor: pointer;
+        font:
+          400 1.1rem "Anton",
+          sans-serif;
+        letter-spacing: 2px;
+      }
+      .btn-coringa:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+      .cartas {
+        display: grid;
+        gap: 0.6rem;
+        margin-top: 0.8rem;
+      }
+      .carta {
+        background: var(--cinza);
+        color: var(--preto);
+        border-radius: 16px;
+        padding: 1rem;
+        font-weight: 800;
+        font-size: 1.05rem;
+        animation: vira 0.6s cubic-bezier(0.2, 1.4, 0.4, 1) backwards;
+      }
+      .carta small {
+        display: block;
+        font-weight: 600;
+        opacity: 0.6;
+        font-size: 0.8rem;
+      }
+      @keyframes vira {
+        from {
+          transform: rotateY(90deg) scale(0.6);
+          opacity: 0;
+        }
+      }
+      .card:nth-child(5) {
+        animation-delay: 0.4s;
+      }
     </style>
   </head>
   <body>
@@ -457,7 +555,8 @@
       }
 
       function render() {
-        const cor = t.cor || "#ff7a00";
+        const cor = t.lendario ? "#ffc93c" : t.cor || "#ff7a00";
+        if (t.lendario) document.body.classList.add("lendaria");
         document.documentElement.style.setProperty("--cor", cor);
         document.querySelector('meta[name="theme-color"]').content = cor;
         document.title = `${t.nome} · Lumminin`;
@@ -483,7 +582,7 @@
           el(
             "div",
             "tag anton",
-            `🔮 TEMA ${t.numero} / ${String(lista.length).padStart(2, "0")}`,
+            `${t.lendario ? "👑 LENDÁRIO · " : "🔮 "}TEMA ${t.numero} / ${String(lista.length).padStart(2, "0")}`,
           ),
           el("h1", null, t.nome),
         );
@@ -508,7 +607,7 @@
         MATERIAIS.forEach((m) => chips.append(el("span", null, m)));
         mat.append(el("h2", null, "🧰 MATERIAIS"), chips);
 
-        main.append(persona, desafio, mat, criarPassos());
+        main.append(persona, desafio, mat, criarPassos(), criarCoringa());
 
         const footer = el("footer");
         footer.innerHTML = `✦ <a href="https://instagram.com/lumminin.oficial" target="_blank" rel="noopener">@LUMMININ.OFICIAL</a> ✦`;
@@ -576,6 +675,99 @@
         return card;
       }
 
+      /* ---------- SOM ---------- */
+      let ctx;
+      function bip(freq, dur = 0.12, tipo = "square", vol = 0.15) {
+        try {
+          ctx ??= new (window.AudioContext || window.webkitAudioContext)();
+          const o = ctx.createOscillator(),
+            g = ctx.createGain();
+          o.type = tipo;
+          o.frequency.value = freq;
+          g.gain.setValueAtTime(vol, ctx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+          o.connect(g).connect(ctx.destination);
+          o.start();
+          o.stop(ctx.currentTime + dur);
+        } catch {}
+      }
+
+      /* ---------- CORINGA ---------- */
+      const CARTAS = [
+        ["🚫", "Proibido usar fita!"],
+        ["✋", "Tem que caber na palma da mão."],
+        ["🤐", "Só 1 pessoa pode falar por 3 minutos."],
+        ["🙈", "Quem monta faz isso de olhos fechados (os outros guiam)."],
+        ["🎨", "Só pode usar UMA cor de canetinha."],
+        ["🔄", "Troquem quem está montando AGORA."],
+        ["💡", "Dica: pense em como a persona usaria isso com uma mão só."],
+        ["🎤", "A apresentação final tem que ser cantada. 🎶"],
+        ["✂️", "Metade do papelão foi confiscada. Usem só a metade!"],
+        ["🧲", "O protótipo precisa ficar em pé sozinho."],
+      ];
+
+      function criarCoringa() {
+        const MAX = t.lendario ? 3 : 2;
+        const KEY = `lumminin_coringa_${t.id}`;
+        let usadas;
+        try {
+          usadas = JSON.parse(localStorage.getItem(KEY)) || [];
+        } catch {
+          usadas = [];
+        }
+
+        const card = el("section", "card");
+        const btn = el("button", "btn-coringa");
+        btn.type = "button";
+        const lista = el("div", "cartas");
+
+        const mostrarCarta = (i, nova) => {
+          const [emoji, txt] = CARTAS[i];
+          const c = el("div", "carta", `${emoji} ${txt}`);
+          if (!nova) c.style.animation = "none";
+          c.prepend(el("small", null, `CARTA ${lista.children.length + 1}`));
+          lista.append(c);
+        };
+
+        const atualizar = () => {
+          const resto = MAX - usadas.length;
+          btn.disabled = resto <= 0;
+          btn.textContent =
+            resto > 0 ? `🃏 PUXAR CARTA (${resto})` : "🃏 SEM CARTAS 😅";
+        };
+
+        btn.onclick = () => {
+          const livres = CARTAS.map((_, i) => i).filter(
+            (i) => !usadas.includes(i),
+          );
+          if (!livres.length || usadas.length >= MAX) return;
+          btn.disabled = true;
+          let n = 0;
+          const embaralha = setInterval(() => {
+            bip(400 + Math.random() * 600, 0.05);
+            btn.textContent = `🃏 ${CARTAS[Math.floor(Math.random() * CARTAS.length)][0]}`;
+            if (++n > 12) {
+              clearInterval(embaralha);
+              const i = livres[Math.floor(Math.random() * livres.length)];
+              usadas.push(i);
+              try {
+                localStorage.setItem(KEY, JSON.stringify(usadas));
+              } catch {}
+              bip(660, 0.15, "triangle");
+              bip(990, 0.3, "triangle");
+              vibrar([40, 30, 80]);
+              mostrarCarta(i, true);
+              atualizar();
+            }
+          }, 80);
+        };
+
+        usadas.forEach((i) => mostrarCarta(i, false));
+        atualizar();
+        card.append(el("h2", null, "🃏 CARTA-CORINGA"), btn, lista);
+        return card;
+      }
+
       /* ---------- CRONÔMETRO ---------- */
       function criarTimer() {
         const PADRAO = 20 * 60;
@@ -596,6 +788,16 @@
         const fmt = (s) =>
           `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
         const mostrar = () => (tempo.textContent = fmt(Math.max(0, resta)));
+        let ultimoSeg = -1;
+        const panico = () => {
+          const on = !!loop && resta > 0 && resta <= 60;
+          document.body.classList.toggle("panico", on);
+          if (on && resta <= 10 && resta !== ultimoSeg) {
+            ultimoSeg = resta;
+            bip(resta <= 3 ? 1200 : 880, 0.1);
+            vibrar(50);
+          }
+        };
 
         const segurarTela = async () => {
           try {
@@ -608,6 +810,7 @@
         };
 
         const parar = () => {
+          document.body.classList.remove("panico");
           clearInterval(loop);
           loop = null;
           fimEm = null;
@@ -618,7 +821,11 @@
         const tick = () => {
           resta = Math.round((fimEm - Date.now()) / 1000);
           mostrar();
+          panico();
           if (resta <= 0) {
+            [0, 300, 600].forEach((d) =>
+              setTimeout(() => bip(520, 0.25, "sawtooth", 0.2), d),
+            );
             parar();
             resta = 0;
             box.classList.add("fim");
@@ -647,6 +854,7 @@
           if (fimEm) fimEm = Date.now() + resta * 1000;
           box.classList.remove("fim");
           mostrar();
+          panico();
         };
         menos.onclick = () => ajustar(-300);
         mais.onclick = () => ajustar(300);

@@ -20,6 +20,7 @@ const TEMAS = [
       "Júlia, 15 anos, terminou um lanche e quer separar os resíduos. Quando chega perto das lixeiras, ela fica em dúvida sobre onde jogar cada coisa.",
     desafio:
       "Como ajudar Júlia a identificar em qual lixeira colocar cada resíduo? Crie um protótipo usando os materiais disponíveis na oficina.",
+    lendario: true,
   },
   {
     id: "todo-mundo-fala",

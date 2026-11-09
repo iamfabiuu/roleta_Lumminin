@@ -639,6 +639,75 @@
           animation-iteration-count: 1 !important;
         }
       }
+
+      /* FLASH + SUSPENSE */
+      .flash {
+        position: fixed;
+        inset: 0;
+        z-index: 44;
+        pointer-events: none;
+        opacity: 0;
+      }
+      .suspense-txt {
+        position: absolute;
+        top: 3vh;
+        z-index: 5;
+        opacity: 0;
+        transition: opacity 0.3s;
+        font-size: clamp(1.6rem, 3.5vw, 3rem);
+        color: var(--laranja);
+        transform: skewX(-10deg);
+        text-shadow: 0 0 20px var(--laranja);
+      }
+      .suspense-txt.on {
+        opacity: 1;
+        animation: treme 0.12s infinite;
+      }
+      @keyframes treme {
+        50% {
+          translate: 2px -1px;
+        }
+      }
+      .roleta-box {
+        transition: transform 0.6s cubic-bezier(0.2, 1.3, 0.4, 1);
+      }
+      .suspense .roleta-box {
+        transform: scale(1.08);
+      }
+      .suspense .luz {
+        animation-duration: 0.08s;
+      }
+      .suspense .bg-star {
+        opacity: 0.15;
+      }
+
+      /* LENDÁRIO 👑 */
+      .card.lendario {
+        border-color: #ffd700;
+        box-shadow:
+          0 0 0 10px #ffd700,
+          0 0 120px rgba(255, 215, 0, 0.6),
+          0 30px 80px #000;
+      }
+      .card.lendario .tema {
+        background: linear-gradient(90deg, #b8860b, #fff6c2, #ffd700, #b8860b);
+        background-size: 200%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: none;
+        filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.7));
+        animation: ouro 2s linear infinite;
+      }
+      .card.lendario .t1::before {
+        content: "👑 LENDÁRIO! ";
+        color: #ffd700;
+      }
+      @keyframes ouro {
+        to {
+          background-position: 200% 0;
+        }
+      }
     </style>
   </head>
 
@@ -672,6 +741,7 @@
 
     <main class="arena" id="arena">
       <img src="estrela_laranja.svg" alt="" class="bg-star" />
+      <div class="suspense-txt" id="suspense"></div>
 
       <div class="roleta-box">
         <div class="luzes" id="luzes"></div>
@@ -701,6 +771,7 @@
       <button id="reset" type="button">resetar roleta</button>
     </div>
 
+    <div class="flash" id="flash"></div>
     <div
       class="modal"
       id="modal"
@@ -758,7 +829,8 @@
         "#b6ce76",
         "#f0a8ca",
       ];
-      const corDe = (i) => TEMAS[i].cor || CORES[i % CORES.length];
+      const corDe = (i) =>
+        TEMAS[i].lendario ? "#ffd700" : TEMAS[i].cor || CORES[i % CORES.length];
 
       const ler = () => {
         try {
@@ -810,6 +882,95 @@
         $("som").textContent = somLigado ? "🔊 SOM" : "🔇 MUDO";
       }
 
+      const garantirAudio = () => {
+        audio ||= new (window.AudioContext || window.webkitAudioContext)();
+        audio.resume?.();
+      };
+
+      let ruido;
+      function barulho(t, vol, dur, filtro, freq) {
+        if (!ruido) {
+          ruido = audio.createBuffer(
+            1,
+            audio.sampleRate * 1.5,
+            audio.sampleRate,
+          );
+          const d = ruido.getChannelData(0);
+          for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+        }
+        const src = audio.createBufferSource();
+        const f = audio.createBiquadFilter();
+        const g = audio.createGain();
+        src.buffer = ruido;
+        f.type = filtro;
+        f.frequency.value = freq;
+        g.gain.setValueAtTime(vol, t);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        src.connect(f).connect(g).connect(audio.destination);
+        src.start(t);
+        src.stop(t + dur);
+      }
+
+      // 🥁 Rufar que acelera e termina num prato
+      function rufar(seg) {
+        if (!somLigado) return;
+        garantirAudio();
+        const t0 = audio.currentTime;
+        for (let t = 0; t < seg; ) {
+          const p = t / seg;
+          barulho(t0 + t, 0.15 + 0.5 * p, 0.08, "bandpass", 180);
+          t += 0.09 - 0.055 * p;
+        }
+        barulho(t0 + seg, 0.6, 1.4, "highpass", 5000);
+        bip(60, 0.5, "sine", 0.4, seg);
+      }
+
+      const fanfarraLendaria = () => {
+        [523, 659, 784, 1047, 1319, 1568, 2093].forEach((f, i) =>
+          bip(f, 0.35, "triangle", 0.13, i * 0.09),
+        );
+        bip(130, 1.2, "sawtooth", 0.08, 0);
+      };
+
+      let digitando;
+      function digitar(el, texto) {
+        clearInterval(digitando);
+        el.textContent = "";
+        let i = 0;
+        digitando = setInterval(() => {
+          el.textContent = texto.slice(0, ++i);
+          bip(1400, 0.02, "square", 0.03);
+          if (i >= texto.length) clearInterval(digitando);
+        }, 45);
+      }
+
+      function flash(cor) {
+        const f = $("flash");
+        f.style.background = cor;
+        f.animate([{ opacity: 1 }, { opacity: 0 }], {
+          duration: 700,
+          easing: "ease-out",
+        });
+      }
+
+      function suspense(i) {
+        const lend = !!TEMAS[i].lendario;
+        const seg = lend ? 3 : 2;
+        $("arena").classList.remove("girando");
+        $("arena").classList.add("suspense");
+        $("suspense").textContent = lend
+          ? "👑 ALGO LENDÁRIO VEM AÍ..."
+          : "🥁 E O TEMA É...";
+        $("suspense").classList.add("on");
+        rufar(seg);
+        setTimeout(() => {
+          $("suspense").classList.remove("on");
+          $("arena").classList.remove("suspense");
+          flash(lend ? "#ffd700" : "#fff");
+          revelar(i);
+        }, seg * 1000);
+      }
+
       /* ---------- LUZES ---------- */
       for (let i = 0; i < 24; i++) {
         const a = (i / 24) * Math.PI * 2;
@@ -834,9 +995,14 @@
           const cor = corDe(i);
 
           const g = ctx.createRadialGradient(c, c, 60, c, c, r);
+          const lend = TEMAS[i].lendario && !usado;
           if (usado) {
             g.addColorStop(0, "#3a3533");
             g.addColorStop(1, "#242020");
+          } else if (lend) {
+            g.addColorStop(0, "#fff6c2");
+            g.addColorStop(0.4, "#ffd700");
+            g.addColorStop(1, "#b8860b");
           } else {
             g.addColorStop(0, "#fff3e6");
             g.addColorStop(0.25, cor);
@@ -882,7 +1048,7 @@
             ctx.fillText("???", x, 22);
             ctx.textAlign = "center";
             ctx.font = "30px serif";
-            ctx.fillText("✦", xIcone, 12);
+            ctx.fillText(lend ? "👑" : "✦", xIcone, 12);
           }
           ctx.restore();
         });
@@ -935,6 +1101,7 @@
         if (!livres.length) return;
 
         girando = true;
+        if (somLigado) garantirAudio(); // destrava o áudio no iPhone
         $("girar").disabled = true;
         $("arena").classList.add("girando");
 
@@ -971,7 +1138,7 @@
           }
 
           if (p < 1) requestAnimationFrame(quadro);
-          else revelar(alvo);
+          else suspense(alvo);
         };
         requestAnimationFrame(quadro);
       }
@@ -984,15 +1151,22 @@
         $("card").style.setProperty("--cor", cor);
         $("numeroTema").textContent =
           `TEMA ${t.numero || String(i + 1).padStart(2, "0")} / ${N}`;
-        $("tema").textContent = t.nome;
+        digitar($("tema"), t.nome);
+        $("card").classList.toggle("lendario", !!t.lendario);
         $("persona").textContent = t.persona || "";
         $("desafio").textContent = t.desafio || "";
         $("modal").classList.add("show");
         $("fechar").focus();
 
         girando = false;
-        fanfarra();
-        confete(110, cor);
+        if (t.lendario) {
+          fanfarraLendaria();
+          confete(260, "#ffd700");
+          setTimeout(() => confete(120, "#fff6c2"), 600);
+        } else {
+          fanfarra();
+          confete(110, cor);
+        }
 
         document.body.animate(
           [
@@ -1007,6 +1181,7 @@
       }
 
       function fechar() {
+        clearInterval(digitando);
         if (!$("modal").classList.contains("show")) return;
         $("modal").classList.remove("show");
 

@@ -708,6 +708,35 @@
           background-position: 200% 0;
         }
       }
+
+      body.tenso::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 30;
+        pointer-events: none;
+        background: radial-gradient(
+          circle at 71% 48%,
+          transparent 20%,
+          rgba(0, 0, 0, 0.88) 42%
+        );
+        animation: pulsaTenso 0.65s infinite;
+      }
+      @keyframes pulsaTenso {
+        50% {
+          opacity: 0.7;
+        }
+      }
+      .tenso .roleta-box {
+        transform: scale(1.12);
+      }
+      .tenso .luz {
+        animation: none;
+        background: #400;
+      }
+      .tenso .suspense-txt {
+        z-index: 31;
+      }
     </style>
   </head>
 
@@ -971,6 +1000,42 @@
         }, seg * 1000);
       }
 
+      function animar(de, ate, dur, ease, aoFim) {
+        const t0 = performance.now();
+        let ultimo = indiceNoPonteiro(de);
+        const quadro = (agora) => {
+          const p = Math.min((agora - t0) / dur, 1);
+          rotacao = de + (ate - de) * ease(p);
+          canvas.style.transform = `rotate(${rotacao}deg)`;
+          const idx = indiceNoPonteiro(rotacao);
+          if (idx !== ultimo) {
+            ultimo = idx;
+            bip(900 + Math.random() * 200);
+            const p1 = $("ponteiro");
+            p1.style.setProperty("--tic", "-14deg");
+            setTimeout(() => p1.style.setProperty("--tic", "0deg"), 60);
+          }
+          p < 1 ? requestAnimationFrame(quadro) : aoFim();
+        };
+        requestAnimationFrame(quadro);
+      }
+
+      let batidas;
+      function tensao(on) {
+        document.body.classList.toggle("tenso", on);
+        $("suspense").textContent = "😰 VAI... NÃO VAI...";
+        $("suspense").classList.toggle("on", on);
+        clearInterval(batidas);
+        if (!on) return;
+        const bate = () => {
+          bip(55, 0.15, "sine", 0.5);
+          bip(48, 0.15, "sine", 0.4, 0.18);
+          navigator.vibrate?.([60, 120, 60]);
+        };
+        bate();
+        batidas = setInterval(bate, 650);
+      }
+
       /* ---------- LUZES ---------- */
       for (let i = 0; i < 24; i++) {
         const a = (i / 24) * Math.PI * 2;
@@ -1118,29 +1183,33 @@
         const inicio = rotacao;
         const fim =
           rotacao + 360 * 7 + ((alvoAng - (rotacao % 360) + 360) % 360);
-        const t0 = performance.now();
-        let ultimo = indiceNoPonteiro(inicio);
+        const drama = TEMAS[alvo].lendario || Math.random() < 0.6;
+        const parada = drama ? fim - SEG * 0.9 : fim;
 
-        const quadro = (agora) => {
-          const p = Math.min((agora - t0) / DURACAO, 1);
-          const ease = 1 - Math.pow(1 - p, 4);
-          rotacao = inicio + (fim - inicio) * ease;
-          canvas.style.transform = `rotate(${rotacao}deg)`;
-
-          // Tic sincronizado com cada divisória.
-          const idx = indiceNoPonteiro(rotacao);
-          if (idx !== ultimo) {
-            ultimo = idx;
-            bip(900 + Math.random() * 200);
-            const p1 = $("ponteiro");
-            p1.style.setProperty("--tic", "-14deg");
-            setTimeout(() => p1.style.setProperty("--tic", "0deg"), 60);
-          }
-
-          if (p < 1) requestAnimationFrame(quadro);
-          else suspense(alvo);
-        };
-        requestAnimationFrame(quadro);
+        animar(
+          inicio,
+          parada,
+          DURACAO,
+          (p) => 1 - Math.pow(1 - p, 4),
+          () => {
+            if (!drama) return suspense(alvo);
+            tensao(true);
+            setTimeout(
+              () =>
+                animar(
+                  parada,
+                  fim,
+                  1800,
+                  (p) => p * p * (3 - 2 * p),
+                  () => {
+                    tensao(false);
+                    suspense(alvo);
+                  },
+                ),
+              1500,
+            );
+          },
+        );
       }
 
       function revelar(i) {
